@@ -1,0 +1,10 @@
+name = "CounterQuasi"
+version = "0.1.0"
+defaultTargets = ["counterquasi"]
+
+[[lean_lib]]
+name = "CounterQuasi"
+
+[[lean_exe]]
+name = "counterquasi"
+root = "Main"
