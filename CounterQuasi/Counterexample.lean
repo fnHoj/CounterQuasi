@@ -79,3 +79,15 @@ info: some ⟨?? ⟶ ??, lambda "x" : ?? =>
        ("x" : ?? : number) : number) : ??) : ?? ⟶ ??⟩
 -/
 #guard_msgs in #gradual lambda "x" => .apply "x" (succ "x")
+
+/--
+info: some ⟨number, (lambda "f" : ?? ⟶ number =>
+   (("f" : ?? ⟶ number)
+     (1 : number : ??) : number) : (?? ⟶ number) ⟶ number)
+   (lambda "x" : number =>
+     ((succ : number ⟶ number)
+       ("x" : number) : number) : number ⟶ number : ?? ⟶ number) : number⟩
+-/
+#guard_msgs in #gradual
+  (lambda "f" : ?? ⟶ number => .apply "f" 1)
+    (lambda "x" : number => succ "x")

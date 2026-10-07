@@ -1,6 +1,6 @@
 # CounterQuasi
 
-论文选读 *Gradual typing for functional languages* 第一部分
+论文选读 [*Gradual typing for functional languages*](https://www.researchgate.net/publication/213883236_Gradual_typing_for_functional_languages) 第一部分
 
 在论文前两章，作者初步介绍了过渡类型系统（gradual typing）。在第 3 章，提及作者过去的尝试：基于子类型关系的 quasi typing，并指出其本质问题。这个 Lean 项目复现了 quasi 系统的漏洞，并展示了 gradual 系统没有这个漏洞。
 
@@ -49,7 +49,7 @@ Gradual 类型系统的基本定义，以及对源代码的初步处理。
 作者在第 3 章将 gradual 系统与 quasi 系统比较。这个文件定义了 quasi 系统的基本关系，并且也提供了按照 quasi 系统的源码处理算法。
 
 - `SubtypeOf`：类型间的子类型关系，记作 `σ <: τ`，对应第 3 章 Subtyping rules 定义。它满足自反性、反对称性、传递性。
-- `joint`：类型之间的“有公共部分”关系，对应第 3 章提及的 `∃ μ, μ = τ ⊓ ν`。Quasi 系统为了防止 `number` 和 `boolean` 之间意外转换，quasi 系统对类型转换有一定限制。否则，那它这个约束是错的，那它不就是“stupid cast”（原文如此）吗。
+- `joint`：类型之间的“有公共部分”关系，对应第 3 章提及的 `∃ μ, μ = τ ⊓ ν`。Quasi 系统为了防止 `number` 和 `boolean` 之间意外转换，quasi 系统对类型转换有一定限制。否则，那它这个约束就是错的，那它不就是“stupid cast”（原文如此）吗。
 - `TypedExpression` 与 `annotate`：和前面相同，但用的是 quasi 系统。
 
 ### `Counterexample.lean`
