@@ -41,8 +41,6 @@ abbrev TSys : TypeSystem where
 
 abbrev succ : TSys.𝔼 := Constant.succ
 
-def Counterexample := (lambda "x" : number => succ "x") #t
-
 macro "#quasi" t:term : command =>
   `(#eval Quasi.annotate TSys (fun _ ↦ none) $t)
 macro "#gradual" t:term : command =>
@@ -54,10 +52,10 @@ info: some ⟨??, ((lambda "x" : number =>
      ("x" : number :> number <: number) : number) : number ⟶ number :> ?? ⟶ number <: boolean ⟶ ??)
    (#t : boolean) : ??⟩
 -/
-#guard_msgs in #quasi Counterexample
+#guard_msgs in #quasi (lambda "x" : number => succ "x") #t
 
 /-- info: none -/
-#guard_msgs in #gradual Counterexample
+#guard_msgs in #gradual (lambda "x" : number => succ "x") #t
 
 /-- info: some ⟨??, (succ : number ⟶ number :> ?? ⟶ number <: boolean ⟶ ??) (#t : boolean) : ??⟩ -/
 #guard_msgs in #quasi succ #t

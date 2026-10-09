@@ -91,13 +91,13 @@ inductive TypedExpression (S : TypeSystem) : (S.𝕏 → Option S.𝕋) → S.�
 protected def TypedExpression.repr (S : TypeSystem) [Repr S.𝕏] [Repr S.𝔾] [Repr S.ℂ]
     (Γ : S.𝕏 → Option S.𝕋) (τ : S.𝕋) (e : TypedExpression S Γ τ) : Std.Format :=
   (match e with
-    | .const v | .var (x := v) _ => reprPrec v 10
-    | .lambda (τ := τ) (σ := σ) x e =>
-      "(lambda " ++ reprPrec x 10 ++ " : " ++ reprPrec σ 10 ++ " =>" ++ .indentD (e.repr ++ ")")
-    | .any_apply (τ := τ) e₁ e₂ h => "(" ++ e₁.repr ++ " :> " ++ reprPrec h.intersect 10 ++
-      " <: " ++ reprPrec (τ ⟶ ??) 10 ++ ")" ++ .indentD ("(" ++ e₂.repr ++ ")")
-    | .apply_downcast (σ₁ := σ₁) e₁ e₂ h => "(" ++ e₁.repr ++ ")" ++
-      .indentD ("(" ++ e₂.repr ++ " :> " ++ reprPrec h.intersect 10 ++ " <: " ++ reprPrec σ₁ 10 ++ ")")
+  | .const v | .var (x := v) _ => reprPrec v 10
+  | .lambda (τ := τ) (σ := σ) x e =>
+    "(lambda " ++ reprPrec x 10 ++ " : " ++ reprPrec σ 10 ++ " =>" ++ .indentD (e.repr ++ ")")
+  | .any_apply (τ := τ) e₁ e₂ h => "(" ++ e₁.repr ++ " :> " ++ reprPrec h.intersect 10 ++
+    " <: " ++ reprPrec (τ ⟶ ??) 10 ++ ")" ++ .indentD ("(" ++ e₂.repr ++ ")")
+  | .apply_downcast (σ₁ := σ₁) e₁ e₂ h => "(" ++ e₁.repr ++ ")" ++
+    .indentD ("(" ++ e₂.repr ++ " :> " ++ reprPrec h.intersect 10 ++ " <: " ++ reprPrec σ₁ 10 ++ ")")
   ) ++ " : " ++ reprPrec τ 10
 
 instance (S : TypeSystem) [Repr S.𝕏] [Repr S.𝔾] [Repr S.ℂ]

@@ -3,9 +3,24 @@ inductive PartialType (G : Type u) where
   | unknown
   | function (σ τ : PartialType G)
 
-namespace PartialType
-
 notation "⦗" G:min "⦘" => PartialType G
+
+inductive Expression (X : Type u) (G : Type v) (C : Type w) where
+  | constant (c : C)
+  | var (x : X)
+  | lambda (x : X) (σ : ⦗G⦘) (e : Expression X G C)
+  | apply (e₁ e₂ : Expression X G C)
+
+set_option linter.checkUnivs false in
+structure TypeSystem.{u, v, w} where
+  𝕏 : Type v
+  [vars_decidableEq : DecidableEq 𝕏]
+  𝔾 : Type u
+  [grounds_decidableEq : DecidableEq 𝔾]
+  ℂ : Type w
+  Δ : ℂ → ⦗𝔾⦘
+
+namespace PartialType
 
 instance : Coe G ⦗G⦘ where coe := .ground
 
@@ -43,12 +58,6 @@ instance instDecidableEqPartialType [inst : DecidableEq G] : DecidableEq ⦗G⦘
 
 end PartialType
 
-inductive Expression (X : Type u) (G : Type v) (C : Type w) where
-  | constant (c : C)
-  | var (x : X)
-  | lambda (x : X) (σ : ⦗G⦘) (e : Expression X G C)
-  | apply (e₁ e₂ : Expression X G C)
-
 namespace Expression
 
 instance : Coe C (Expression X G C) where coe := constant
@@ -77,15 +86,6 @@ instance [Repr X] [Repr G] [Repr C] : Repr (Expression X G C) where
   reprPrec e := e.reprPrec
 
 end Expression
-
-set_option linter.checkUnivs false in
-structure TypeSystem.{u, v, w} where
-  𝕏 : Type v
-  [vars_decidableEq : DecidableEq 𝕏]
-  𝔾 : Type u
-  [grounds_decidableEq : DecidableEq 𝔾]
-  ℂ : Type w
-  Δ : ℂ → ⦗𝔾⦘
 
 namespace TypeSystem
 
