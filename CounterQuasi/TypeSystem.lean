@@ -27,6 +27,8 @@ instance : Coe G ⦗G⦘ where coe := .ground
 notation "??" => unknown
 infixr:65 " ⟶ " => function
 
+instance : Coe G ⦗G⦘ where coe := .ground
+
 protected def reprPrec [Repr G] (τ : ⦗G⦘) (n : Nat) : Std.Format := match τ with
   | .ground γ => reprPrec γ n
   | ?? => "??"

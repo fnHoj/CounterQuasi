@@ -2,8 +2,8 @@ import CounterQuasi.TypeSystem
 
 namespace Quasi
 
-inductive SubtypeOf : ⦗G⦘ → ⦗G⦘ → Prop where
-  | refl (γ : ⦗G⦘) : SubtypeOf γ γ
+inductive SubtypeOf {G} : ⦗G⦘ → ⦗G⦘ → Prop where
+  | ground (γ : G) : SubtypeOf γ γ
   | subtype_unknown {γ : ⦗G⦘} : SubtypeOf γ ??
   | function {τ₁ τ₂ σ₁ σ₂} :
     SubtypeOf σ₁ τ₁ → SubtypeOf τ₂ σ₂ →
@@ -11,23 +11,30 @@ inductive SubtypeOf : ⦗G⦘ → ⦗G⦘ → Prop where
 
 infix:50 " <: " => SubtypeOf
 
-abbrev SubtypeOf.rfl {γ : ⦗G⦘} : γ <: γ := .refl γ
+namespace SubtypeOf
 
-theorem SubtypeOf.trans : SubtypeOf σ τ → SubtypeOf τ μ → SubtypeOf σ μ
-  | refl _, h | h, refl _ => h
+theorem refl : ∀ τ : ⦗G⦘, τ <: τ
+  | .ground γ => .ground γ
+  | ?? => .subtype_unknown
+  | σ ⟶ τ => .function (.refl σ) (.refl τ)
+
+theorem rfl {γ : ⦗G⦘} : γ <: γ := .refl γ
+
+theorem trans : SubtypeOf σ τ → SubtypeOf τ μ → SubtypeOf σ μ
+  | ground _, ground _ => ground _
   | _, subtype_unknown => subtype_unknown
   | function h₁ h₂, function h₃ h₄ => function (trans h₃ h₁) (trans h₂ h₄)
 
+end SubtypeOf
+
 theorem ground_subtypeOf_ground {γ₁ γ₂ : G} : .ground γ₁ <: .ground γ₂ ↔ γ₁ = γ₂ where
   mpr | rfl => .rfl
-  mp | .rfl => rfl
+  mp | .ground _ => rfl
 
 theorem function_subtypeOf_function {τ₁ τ₂ σ₁ σ₂ : ⦗G⦘} :
     τ₁ ⟶ τ₂ <: σ₁ ⟶ σ₂ ↔ σ₁ <: τ₁ ∧ τ₂ <: σ₂ where
   mpr := And.elim SubtypeOf.function
-  mp
-  | .refl (_ ⟶ _) => ⟨.rfl, .rfl⟩
-  | .function h₁ h₂ => ⟨h₁, h₂⟩
+  mp | .function h₁ h₂ => ⟨h₁, h₂⟩
 
 instance [inst : DecidableEq G] : DecidableRel (@SubtypeOf G) := subtypeOf
 where subtypeOf (σ τ : ⦗G⦘) : Decidable (σ <: τ) := match σ, τ with
@@ -51,15 +58,11 @@ theorem joint_any : joint σ ?? := ⟨σ, .rfl, .subtype_unknown⟩
 
 theorem joint_ground {γ₁ γ₂ : G} : joint (.ground γ₁) (.ground γ₂) ↔ γ₁ = γ₂ where
   mpr | rfl => ⟨_, .rfl, .rfl⟩
-  mp h := match γ₁, γ₂, h with | _, _, ⟨_, .rfl, .rfl⟩ => rfl
+  mp h := match γ₁, γ₂, h with | _, _, ⟨_, .ground _, .ground _⟩ => rfl
 
 theorem joint_function {σ₁ σ₂ τ₁ τ₂ : ⦗G⦘} : joint (σ₁ ⟶ σ₂) (τ₁ ⟶ τ₂) ↔ joint σ₂ τ₂ where
   mpr | ⟨μ, hσ, hτ⟩ => ⟨?? ⟶ μ, .function .subtype_unknown hσ, .function .subtype_unknown hτ⟩
-  mp h := match σ₁, σ₂, τ₁, τ₂, h with
-  | _, _, _, _, ⟨_ ⟶ _, .rfl,           .rfl⟩           => ⟨_, .rfl, .rfl⟩
-  | _, _, _, _, ⟨_ ⟶ _, .rfl,           .function _ h⟩  => ⟨_, .rfl, h⟩
-  | _, _, _, _, ⟨_ ⟶ _, .function _ h,  .rfl⟩           => ⟨_, h, .rfl⟩
-  | _, _, _, _, ⟨_ ⟶ _, .function _ hσ, .function _ hτ⟩ => ⟨_, hσ, hτ⟩
+  mp | ⟨_ ⟶ _, .function _ hσ, .function _ hτ⟩ => ⟨_, hσ, hτ⟩
 
 instance instDecidableRelJoint [inst : DecidableEq G] : DecidableRel (@joint G)
   | _ ⟶ _, .ground _
